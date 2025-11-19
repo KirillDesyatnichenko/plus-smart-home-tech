@@ -17,18 +17,19 @@ public class DeviceAddedEventMapper implements HubEventMapper {
 
     @Override
     public SpecificRecordBase map(HubEvent dto) {
-        DeviceAddedEvent add = (DeviceAddedEvent) dto;
+        DeviceAddedEvent event = (DeviceAddedEvent) dto;
 
         DeviceAddedEventAvro payload = DeviceAddedEventAvro.newBuilder()
-                .setId(add.getId())
-                .setDeviceType(DeviceTypeAvro.valueOf(add.getDeviceType().name()))
-                .setHubId(add.getHubId())
-                .setTimestamp(add.getTimestamp() != null ? add.getTimestamp() : Instant.now())
+                .setId(event.getId())
+                .setDeviceType(DeviceTypeAvro.valueOf(event.getDeviceType().name()))
+                .setHubId(event.getHubId())
+                .setTimestamp(event.getTimestamp())
+                .setType(HubEventTypeAvro.DEVICE_ADDED)
                 .build();
 
         return HubEventAvro.newBuilder()
-                .setHubId(add.getHubId())
-                .setTimestamp(add.getTimestamp() != null ? add.getTimestamp() : Instant.now())
+                .setHubId(event.getHubId())
+                .setTimestamp(event.getTimestamp())
                 .setType(HubEventTypeAvro.DEVICE_ADDED)
                 .setPayload(payload)
                 .build();
