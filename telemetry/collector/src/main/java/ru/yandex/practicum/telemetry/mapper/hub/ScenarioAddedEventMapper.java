@@ -8,6 +8,7 @@ import ru.yandex.practicum.telemetry.model.hub.HubEventType;
 import ru.yandex.practicum.telemetry.model.hub.ScenarioAddedEvent;
 
 import java.time.Instant;
+import java.util.stream.Collectors;
 
 @Component
 public class ScenarioAddedEventMapper implements HubEventMapper {
@@ -16,30 +17,36 @@ public class ScenarioAddedEventMapper implements HubEventMapper {
     public SpecificRecordBase map(HubEvent dto) {
         ScenarioAddedEvent event = (ScenarioAddedEvent) dto;
 
+        var conditions = event.getConditions().stream()
+                .map(c -> ScenarioConditionAvro.newBuilder()
+                        .setSensorId(c.getSensorId())
+                        .setType(ConditionTypeAvro.valueOf(c.getType().name()))
+                        .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()))
+                        .setValue(c.getValue()) // Integer, nullable
+                        .build())
+                .collect(Collectors.toList());
+
+        var actions = event.getActions().stream()
+                .map(a -> DeviceActionAvro.newBuilder()
+                        .setSensorId(a.getSensorId())
+                        .setType(ActionTypeAvro.valueOf(a.getType().name()))
+                        .setValue(a.getValue()) // Integer, nullable
+                        .build())
+                .collect(Collectors.toList());
+
+        Instant ts = event.getTimestamp() != null ? event.getTimestamp() : Instant.now();
+
         ScenarioAddedEventAvro payload = ScenarioAddedEventAvro.newBuilder()
                 .setName(event.getName())
-                .setConditions(event.getConditions().stream()
-                        .map(c -> ScenarioConditionAvro.newBuilder()
-                                .setSensorId(c.getSensorId())
-                                .setType(ConditionTypeAvro.valueOf(c.getType().name()))
-                                .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()))
-                                .setValue(c.getValue() == null ? null : c.getValue())
-                                .build())
-                        .toList())
-                .setActions(event.getActions().stream()
-                        .map(a -> DeviceActionAvro.newBuilder()
-                                .setSensorId(a.getSensorId())
-                                .setType(ActionTypeAvro.valueOf(a.getType().name()))
-                                .setValue(a.getValue() == null ? null : a.getValue())
-                                .build())
-                        .toList())
+                .setConditions(conditions)
+                .setActions(actions)
                 .setHubId(event.getHubId())
-                .setTimestamp(event.getTimestamp() != null ? event.getTimestamp() : Instant.now())
+                .setTimestamp(ts)
                 .build();
 
         return HubEventAvro.newBuilder()
                 .setHubId(event.getHubId())
-                .setTimestamp(event.getTimestamp() != null ? event.getTimestamp() : Instant.now())
+                .setTimestamp(ts)
                 .setType(HubEventTypeAvro.SCENARIO_ADDED)
                 .setPayload(payload)
                 .build();
