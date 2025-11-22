@@ -93,7 +93,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>ru.yandex.practicum.telemetry.collector.CollectorApplication</mainClass>
+                    <mainClass>ru.yandex.practicum.telemetry.CollectorApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>
