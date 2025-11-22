@@ -84,14 +84,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.3.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <version>3.3.1</version> <!-- версия совпадает с твоим Spring Boot -->
                 <configuration>
                     <mainClass>ru.yandex.practicum.telemetry.collector.CollectorApplication</mainClass>
                 </configuration>
