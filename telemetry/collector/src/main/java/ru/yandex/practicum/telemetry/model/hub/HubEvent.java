@@ -2,7 +2,6 @@ package ru.yandex.practicum.telemetry.model.hub;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,7 +12,7 @@ import java.time.Instant;
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "type",
-        visible = true
+        defaultImpl = HubEvent.class
 )
 @JsonSubTypes({
         @JsonSubTypes.Type(value = DeviceAddedEvent.class, name = "DEVICE_ADDED"),
@@ -25,13 +24,10 @@ import java.time.Instant;
 @Setter
 @ToString
 public abstract class HubEvent {
-    @NotBlank
+    @NotBlank(message = "Id не может быть пустым")
     private String hubId;
 
-    @NotNull
     private Instant timestamp = Instant.now();
 
-    @JsonProperty("type")
-    @NotNull
     public abstract HubEventType getType();
 }

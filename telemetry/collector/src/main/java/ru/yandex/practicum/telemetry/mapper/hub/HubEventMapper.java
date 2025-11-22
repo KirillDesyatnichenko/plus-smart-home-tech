@@ -5,6 +5,8 @@ import ru.yandex.practicum.telemetry.model.hub.HubEvent;
 import ru.yandex.practicum.telemetry.model.hub.HubEventType;
 
 public interface HubEventMapper {
+
     SpecificRecordBase map(HubEvent dto);
+
     HubEventType getType();
 }

@@ -5,12 +5,9 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceAddedEventAvro;
 import ru.yandex.practicum.kafka.telemetry.event.DeviceTypeAvro;
 import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
-import ru.yandex.practicum.kafka.telemetry.event.HubEventTypeAvro;
 import ru.yandex.practicum.telemetry.model.hub.DeviceAddedEvent;
 import ru.yandex.practicum.telemetry.model.hub.HubEvent;
 import ru.yandex.practicum.telemetry.model.hub.HubEventType;
-
-import java.time.Instant;
 
 @Component
 public class DeviceAddedEventMapper implements HubEventMapper {
@@ -21,16 +18,12 @@ public class DeviceAddedEventMapper implements HubEventMapper {
 
         DeviceAddedEventAvro payload = DeviceAddedEventAvro.newBuilder()
                 .setId(event.getId())
-                .setDeviceType(DeviceTypeAvro.valueOf(event.getDeviceType().name()))
-                .setHubId(event.getHubId())
-                .setTimestamp(event.getTimestamp())
-                .setType(HubEventTypeAvro.DEVICE_ADDED)
+                .setType(DeviceTypeAvro.valueOf(event.getDeviceType().name()))
                 .build();
 
         return HubEventAvro.newBuilder()
                 .setHubId(event.getHubId())
                 .setTimestamp(event.getTimestamp())
-                .setType(HubEventTypeAvro.DEVICE_ADDED)
                 .setPayload(payload)
                 .build();
     }

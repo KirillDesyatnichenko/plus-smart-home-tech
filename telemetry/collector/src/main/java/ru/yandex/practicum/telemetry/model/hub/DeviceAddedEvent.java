@@ -10,10 +10,10 @@ import lombok.ToString;
 @Setter
 @ToString(callSuper = true)
 public class DeviceAddedEvent extends HubEvent {
-    @NotBlank
+    @NotBlank(message = "Id не может быть пустым")
     private String id;
 
-    @NotNull
+    @NotNull(message = "Тип действия не может быть пустым")
     private DeviceType deviceType;
 
     @Override

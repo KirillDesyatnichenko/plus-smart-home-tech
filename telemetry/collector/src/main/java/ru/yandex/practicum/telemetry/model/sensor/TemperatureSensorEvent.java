@@ -9,9 +9,9 @@ import lombok.ToString;
 @Setter
 @ToString(callSuper = true)
 public class TemperatureSensorEvent extends SensorEvent {
-    @NotNull
+    @NotNull(message = "Температура по цельсию не может быть равна 0")
     private Integer temperatureC;
-    @NotNull
+    @NotNull(message = "Температура по фарингейту не может быть равна 0")
     private Integer temperatureF;
 
     @Override

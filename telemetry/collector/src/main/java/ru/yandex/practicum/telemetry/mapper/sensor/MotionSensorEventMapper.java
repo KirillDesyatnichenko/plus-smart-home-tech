@@ -2,9 +2,7 @@ package ru.yandex.practicum.telemetry.mapper.sensor;
 
 import org.apache.avro.specific.SpecificRecordBase;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.kafka.telemetry.event.MotionSensorAvro;
-import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
-import ru.yandex.practicum.kafka.telemetry.event.SensorEventTypeAvro;
+import ru.yandex.practicum.kafka.telemetry.event.*;
 import ru.yandex.practicum.telemetry.model.sensor.MotionSensorEvent;
 import ru.yandex.practicum.telemetry.model.sensor.SensorEvent;
 import ru.yandex.practicum.telemetry.model.sensor.SensorEventType;
@@ -27,8 +25,7 @@ public class MotionSensorEventMapper implements SensorEventMapper {
         return SensorEventAvro.newBuilder()
                 .setId(motion.getId())
                 .setHubId(motion.getHubId())
-                .setTimestamp(motion.getTimestamp() != null ? motion.getTimestamp() : Instant.now())
-                .setType(SensorEventTypeAvro.MOTION_SENSOR_EVENT)
+                .setTimestamp(motion.getTimestamp())
                 .setPayload(payload)
                 .build();
     }

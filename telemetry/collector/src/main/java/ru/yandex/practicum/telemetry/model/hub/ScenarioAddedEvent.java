@@ -13,14 +13,14 @@ import java.util.List;
 @Setter
 @ToString(callSuper = true)
 public class ScenarioAddedEvent extends HubEvent {
-    @NotNull
+    @NotNull(message = "Имя не может быть пустым")
     @Size(min = 3)
     private String name;
 
-    @NotEmpty
+    @NotEmpty(message = "List conditions не может быть пустым")
     private List<ScenarioCondition> conditions;
 
-    @NotEmpty
+    @NotEmpty(message = "List actions не может быть пустым")
     private List<DeviceAction> actions;
 
     @Override

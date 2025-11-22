@@ -14,20 +14,26 @@ import java.io.IOException;
 public final class AvroSerializer implements Serializer<SpecificRecordBase> {
 
     private final EncoderFactory encoderFactory = EncoderFactory.get();
-    private BinaryEncoder encoder;
 
     @Override
     public byte[] serialize(String topic, SpecificRecordBase data) {
         if (data == null) return null;
 
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            DatumWriter<SpecificRecordBase> writer = new SpecificDatumWriter<>(data.getSchema());
-            encoder = encoderFactory.binaryEncoder(out, encoder);
+            BinaryEncoder encoder = encoderFactory.binaryEncoder(out, null);
+
+            DatumWriter<SpecificRecordBase> writer =
+                    new SpecificDatumWriter<>(data.getSchema());
+
             writer.write(data, encoder);
             encoder.flush();
+
             return out.toByteArray();
+
         } catch (IOException ex) {
-            throw new SerializationException("Ошибка сериализации Avro для топика: " + topic, ex);
+            throw new SerializationException(
+                    "Ошибка сериализации Avro для топика: " + topic, ex
+            );
         }
     }
 }

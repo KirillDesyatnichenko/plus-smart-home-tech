@@ -9,7 +9,7 @@ import lombok.ToString;
 @Setter
 @ToString(callSuper = true)
 public class DeviceRemovedEvent extends HubEvent {
-    @NotBlank
+    @NotBlank(message = "Id не может быть пустым")
     private String id;
 
     @Override

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.telemetry.model.hub;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -9,18 +8,17 @@ import lombok.ToString;
 
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public class ScenarioCondition {
-    @NotBlank
-    @JsonProperty("sensor_id")
+    @NotBlank(message = "Id не может быть пустым")
     private String sensorId;
 
-    @NotNull
+    @NotNull(message = "ConditionType не может быть пустым")
     private ConditionType type;
 
-    @NotNull
+    @NotNull(message = "ConditionOperation не может быть пустым")
     private ConditionOperation operation;
 
-    @NotNull
+    @NotNull(message = "Value не может быть пустым")
     private Integer value;
 }

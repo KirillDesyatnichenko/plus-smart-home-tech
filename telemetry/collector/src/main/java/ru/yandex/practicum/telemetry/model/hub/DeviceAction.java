@@ -1,6 +1,5 @@
 package ru.yandex.practicum.telemetry.model.hub;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -11,11 +10,10 @@ import lombok.ToString;
 @Setter
 @ToString
 public class DeviceAction {
-    @NotBlank
-    @JsonProperty("sensor_id")
+    @NotBlank(message = "Id не может быть пустым")
     private String sensorId;
 
-    @NotNull
+    @NotNull(message = "Тип действия не может быть пустым")
     private ActionType type;
 
     private Integer value;

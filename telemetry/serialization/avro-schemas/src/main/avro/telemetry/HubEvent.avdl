@@ -1,6 +1,5 @@
 @namespace("ru.yandex.practicum.kafka.telemetry.event")
 protocol HubEventProtocol {
-
 	enum DeviceTypeAvro {
 		MOTION_SENSOR,
 		TEMPERATURE_SENSOR,
@@ -31,61 +30,41 @@ protocol HubEventProtocol {
 		SET_VALUE
 	}
 
-	enum HubEventTypeAvro {
-		DEVICE_ADDED,
-		DEVICE_REMOVED,
-		SCENARIO_ADDED,
-		SCENARIO_REMOVED
-	}
-
 	record DeviceAddedEventAvro {
 		string id;
-		DeviceTypeAvro deviceType;
-		string hubId;
-		timestamp_ms timestamp;
-		HubEventTypeAvro type = "DEVICE_ADDED";
+		DeviceTypeAvro type;
 	}
 
 	record DeviceRemovedEventAvro {
 		string id;
-		string hubId;
-		timestamp_ms timestamp;
-		HubEventTypeAvro type = "DEVICE_REMOVED";
 	}
 
 	record ScenarioConditionAvro {
-		string sensorId;
+		string sensor_id;
 		ConditionTypeAvro type;
 		ConditionOperationAvro operation;
-		union { null, int } value = null;
+		union {null, int, boolean} value = null;
 	}
 
 	record DeviceActionAvro {
-		string sensorId;
+		string sensor_id;
 		ActionTypeAvro type;
-		union { null, int } value = null;
+		int? value = null;
 	}
 
 	record ScenarioAddedEventAvro {
 		string name;
 		array<ScenarioConditionAvro> conditions;
 		array<DeviceActionAvro> actions;
-		string hubId;
-		timestamp_ms timestamp;
-		HubEventTypeAvro type = "SCENARIO_ADDED";
 	}
 
 	record ScenarioRemovedEventAvro {
 		string name;
-		string hubId;
-		timestamp_ms timestamp;
-		HubEventTypeAvro type = "SCENARIO_REMOVED";
 	}
 
 	record HubEventAvro {
-		string hubId;
+		string hub_id;
 		timestamp_ms timestamp;
-		HubEventTypeAvro type;
 		union {
 			DeviceAddedEventAvro,
 			DeviceRemovedEventAvro,

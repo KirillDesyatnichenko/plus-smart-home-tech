@@ -9,11 +9,13 @@ import lombok.ToString;
 @Setter
 @ToString(callSuper = true)
 public class MotionSensorEvent extends SensorEvent {
-    @NotNull
+    @NotNull(message = "linkQuality не может быть равна 0")
     private Integer linkQuality;
-    @NotNull
+
+    @NotNull(message = "Движение не может быть равно 0")
     private Boolean motion;
-    @NotNull
+
+    @NotNull(message = "Напряжение не может быть равно 0")
     private Integer voltage;
 
     @Override
