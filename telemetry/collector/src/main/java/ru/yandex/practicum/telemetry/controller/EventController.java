@@ -35,7 +35,7 @@ public class EventController extends CollectorControllerGrpc.CollectorController
             observer.onNext(Empty.getDefaultInstance());
             observer.onCompleted();
         } catch (Exception e) {
-            log.error("Failed to process telemetry event", e);
+            log.error("Не удалось обработать событие телеметрии", e);
             observer.onError(new StatusRuntimeException(
                     Status.INTERNAL.withDescription(e.getLocalizedMessage()).withCause(e)
             ));
