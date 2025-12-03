@@ -2,19 +2,18 @@ package ru.yandex.practicum.telemetry.mapper.sensor;
 
 import org.apache.avro.specific.SpecificRecordBase;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.kafka.telemetry.event.*;
-import ru.yandex.practicum.telemetry.model.sensor.MotionSensorEvent;
-import ru.yandex.practicum.telemetry.model.sensor.SensorEvent;
-import ru.yandex.practicum.telemetry.model.sensor.SensorEventType;
-
-import java.time.Instant;
+import ru.yandex.practicum.grpc.telemetry.event.MotionSensorProto;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
+import ru.yandex.practicum.kafka.telemetry.event.MotionSensorAvro;
+import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
+import ru.yandex.practicum.telemetry.mapper.ProtoTimestampMapper;
 
 @Component
 public class MotionSensorEventMapper implements SensorEventMapper {
 
     @Override
-    public SpecificRecordBase map(SensorEvent dto) {
-        MotionSensorEvent motion = (MotionSensorEvent) dto;
+    public SpecificRecordBase map(SensorEventProto event) {
+        MotionSensorProto motion = event.getMotionSensor();
 
         MotionSensorAvro payload = MotionSensorAvro.newBuilder()
                 .setLinkQuality(motion.getLinkQuality())
@@ -23,15 +22,15 @@ public class MotionSensorEventMapper implements SensorEventMapper {
                 .build();
 
         return SensorEventAvro.newBuilder()
-                .setId(motion.getId())
-                .setHubId(motion.getHubId())
-                .setTimestamp(motion.getTimestamp())
+                .setId(event.getId())
+                .setHubId(event.getHubId())
+                .setTimestamp(ProtoTimestampMapper.toInstant(event.hasTimestamp() ? event.getTimestamp() : null))
                 .setPayload(payload)
                 .build();
     }
 
     @Override
-    public SensorEventType getType() {
-        return SensorEventType.MOTION_SENSOR_EVENT;
+    public SensorEventProto.PayloadCase getPayloadCase() {
+        return SensorEventProto.PayloadCase.MOTION_SENSOR;
     }
 }
