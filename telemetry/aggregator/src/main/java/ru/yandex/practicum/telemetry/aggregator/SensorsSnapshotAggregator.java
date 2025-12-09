@@ -11,6 +11,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class SensorsSnapshotAggregator {
 
@@ -26,7 +27,7 @@ public class SensorsSnapshotAggregator {
         final Instant eventTimestamp = event.getTimestamp();
         final Object payload = event.getPayload();
 
-        final SensorsSnapshotAvro[] updatedSnapshotRef = new SensorsSnapshotAvro[1];
+        AtomicReference<SensorsSnapshotAvro> updatedSnapshot = new AtomicReference<>();
 
         snapshots.compute(hubId, (id, existingSnapshot) -> {
             SensorsSnapshotAvro snapshot = existingSnapshot != null
@@ -58,11 +59,11 @@ public class SensorsSnapshotAggregator {
             sensorsState.put(sensorId, newState);
             snapshot.setTimestamp(eventTimestamp);
 
-            updatedSnapshotRef[0] = SensorsSnapshotAvro.newBuilder(snapshot).build();
+            updatedSnapshot.set(SensorsSnapshotAvro.newBuilder(snapshot).build());
             return snapshot;
         });
 
-        return Optional.ofNullable(updatedSnapshotRef[0]);
+        return Optional.ofNullable(updatedSnapshot.get());
     }
 
     private static boolean isEventValid(SensorEventAvro event) {

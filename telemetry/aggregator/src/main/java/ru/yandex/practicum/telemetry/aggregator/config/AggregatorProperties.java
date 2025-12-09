@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AggregatorProperties {
 
     private Kafka kafka = new Kafka();
-    private long pollTimeoutMs = 1000;
+    private long pollTimeoutMs = 100;
 
     @Data
     public static class Kafka {
