@@ -39,7 +39,7 @@ public class AggregationStarter {
 
     public void start() {
         if (!running.compareAndSet(false, true)) {
-            log.warn("Aggregator already running");
+            log.warn("Агрегатор уже запущен");
             return;
         }
 
@@ -48,7 +48,7 @@ public class AggregationStarter {
 
         String sensorsTopic = properties.getKafka().getSensorsTopic();
         consumer.subscribe(List.of(sensorsTopic));
-        log.info("Агрегатор подписан на топик {}", sensorsTopic);
+        log.info("Агрегатор подписан на топик {} (pollTimeoutMs={})", sensorsTopic, properties.getPollTimeoutMs());
 
         try {
             Duration pollTimeout = Duration.ofMillis(properties.getPollTimeoutMs());
@@ -87,6 +87,8 @@ public class AggregationStarter {
             if (event == null) continue;
 
             Optional<SensorsSnapshotAvro> snapshotOptional = snapshotAggregator.updateState(event);
+            log.debug("event=sensor-event-received hubId={} sensorId={} partition={} offset={}",
+                    event.getHubId(), event.getId(), record.partition(), record.offset());
             snapshotOptional.ifPresent(this::publishSnapshot);
         }
     }
@@ -100,7 +102,7 @@ public class AggregationStarter {
             if (exception != null) {
                 log.error("Не удалось отправить снапшот хаба {} в топик {}", snapshot.getHubId(), topic, exception);
             } else if (metadata != null) {
-                log.debug("Снапшот хаба {} записан в {} partition={} offset={}",
+                log.info("event=snapshot-produced hubId={} topic={} partition={} offset={}",
                         snapshot.getHubId(), metadata.topic(), metadata.partition(), metadata.offset());
             }
         });
