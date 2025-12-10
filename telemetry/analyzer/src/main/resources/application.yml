@@ -1,0 +1,53 @@
+spring:
+  application:
+    name: analyzer
+  datasource:
+    url: jdbc:postgresql://localhost:5432/analyzer
+    username: analyzer
+    password: analyzer
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate.jdbc.lob.non_contextual_creation: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+logging:
+  level:
+    ru.yandex.practicum.telemetry.analyzer: INFO
+    org.springframework: WARN
+    org.apache.kafka: WARN
+
+grpc:
+  client:
+    hub-router:
+      address: 'static://localhost:59090'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+
+analyzer:
+  kafka:
+    bootstrap-servers: localhost:9092
+    topics:
+      hub-events: telemetry.hubs.v1
+      snapshots: telemetry.snapshots.v1
+    hub-events:
+      group-id: analyzer-hub-events
+      poll-timeout-ms: 500
+      enable-auto-commit: true
+      properties:
+        auto.offset.reset: earliest
+    snapshots:
+      group-id: analyzer-snapshots
+      poll-timeout-ms: 200
+      enable-auto-commit: false
+      properties:
+        auto.offset.reset: earliest
+        max.poll.records: 10

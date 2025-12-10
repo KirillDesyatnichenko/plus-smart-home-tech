@@ -1,0 +1,14 @@
+logging:
+  level:
+    ru.yandex.practicum.telemetry: TRACE
+    org.springframework: ERROR
+    org.springframework.cloud.netflix.eureka: INFO
+    org.apache.kafka: WARN
+
+aggregator:
+  kafka:
+    bootstrap-servers: localhost:9092
+    sensors-topic: telemetry.sensors.v1
+    snapshots-topic: telemetry.snapshots.v1
+    group-id: telemetry-aggregator
+  poll-timeout-ms: 100

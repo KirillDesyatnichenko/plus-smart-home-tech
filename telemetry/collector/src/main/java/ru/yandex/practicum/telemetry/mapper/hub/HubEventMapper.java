@@ -1,12 +1,11 @@
 package ru.yandex.practicum.telemetry.mapper.hub;
 
 import org.apache.avro.specific.SpecificRecordBase;
-import ru.yandex.practicum.telemetry.model.hub.HubEvent;
-import ru.yandex.practicum.telemetry.model.hub.HubEventType;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
 
 public interface HubEventMapper {
 
-    SpecificRecordBase map(HubEvent dto);
+    SpecificRecordBase map(HubEventProto event);
 
-    HubEventType getType();
+    HubEventProto.PayloadCase getPayloadCase();
 }

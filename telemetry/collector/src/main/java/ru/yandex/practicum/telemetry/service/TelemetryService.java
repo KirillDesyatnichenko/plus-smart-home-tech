@@ -3,8 +3,8 @@ package ru.yandex.practicum.telemetry.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.telemetry.model.sensor.*;
-import ru.yandex.practicum.telemetry.model.hub.*;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.telemetry.kafka.KafkaSender;
 import ru.yandex.practicum.telemetry.mapper.hub.HubEventMapper;
 import ru.yandex.practicum.telemetry.mapper.sensor.SensorEventMapper;
@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TelemetryService {
 
-    private final Map<SensorEventType, SensorEventMapper> sensorMappers;
-    private final Map<HubEventType, HubEventMapper> hubMappers;
+    private final Map<SensorEventProto.PayloadCase, SensorEventMapper> sensorMappers;
+    private final Map<HubEventProto.PayloadCase, HubEventMapper> hubMappers;
     private final KafkaSender kafkaSender;
 
     private final String sensorsTopic;
@@ -32,31 +32,43 @@ public class TelemetryService {
                             @Value("${kafka.topic.hubs}") String hubsTopic) {
 
         this.sensorMappers = sensorMappers.stream()
-                .collect(Collectors.toMap(SensorEventMapper::getType, Function.identity()));
+                .collect(Collectors.toMap(SensorEventMapper::getPayloadCase, Function.identity()));
 
         this.hubMappers = hubMappers.stream()
-                .collect(Collectors.toMap(HubEventMapper::getType, Function.identity()));
+                .collect(Collectors.toMap(HubEventMapper::getPayloadCase, Function.identity()));
 
         this.kafkaSender = kafkaSender;
         this.sensorsTopic = sensorsTopic;
         this.hubsTopic = hubsTopic;
     }
 
-    public void processSensor(SensorEvent dto) {
-        SensorEventMapper mapper = sensorMappers.get(dto.getType());
-        if (mapper == null) {
-            log.warn("Неподдерживаемый тип события датчика {}", dto.getType());
+    public void processSensor(SensorEventProto event) {
+        SensorEventProto.PayloadCase payloadCase = event.getPayloadCase();
+        if (payloadCase == SensorEventProto.PayloadCase.PAYLOAD_NOT_SET) {
+            log.warn("Получено событие датчика без payload, id={}", event.getId());
             return;
         }
-        kafkaSender.send(sensorsTopic, mapper.map(dto));
+
+        SensorEventMapper mapper = sensorMappers.get(payloadCase);
+        if (mapper == null) {
+            log.warn("Неподдерживаемый тип события датчика {}", payloadCase);
+            return;
+        }
+        kafkaSender.send(sensorsTopic, mapper.map(event));
     }
 
-    public void processHub(HubEvent dto) {
-        HubEventMapper mapper = hubMappers.get(dto.getType());
-        if (mapper == null) {
-            log.warn("Неподдерживаемый тип события хаба {}", dto.getType());
+    public void processHub(HubEventProto event) {
+        HubEventProto.PayloadCase payloadCase = event.getPayloadCase();
+        if (payloadCase == HubEventProto.PayloadCase.PAYLOAD_NOT_SET) {
+            log.warn("Получено событие хаба без payload, hubId={}", event.getHubId());
             return;
         }
-        kafkaSender.send(hubsTopic, mapper.map(dto));
+
+        HubEventMapper mapper = hubMappers.get(payloadCase);
+        if (mapper == null) {
+            log.warn("Неподдерживаемый тип события хаба {}", payloadCase);
+            return;
+        }
+        kafkaSender.send(hubsTopic, mapper.map(event));
     }
 }
