@@ -14,30 +14,23 @@ public class AnalyzerProperties {
 
     @Data
     public static class Kafka {
-        private String bootstrapServers = "localhost:9092";
+        private String bootstrapServers;
         private Topics topics = new Topics();
-        private Consumer hubEvents = Consumer.defaults(true, 500);
-        private Consumer snapshots = Consumer.defaults(false, 200);
+        private Consumer hubEvents = new Consumer();
+        private Consumer snapshots = new Consumer();
     }
 
     @Data
     public static class Topics {
-        private String hubEvents = "telemetry.hubs.v1";
-        private String snapshots = "telemetry.snapshots.v1";
+        private String hubEvents;
+        private String snapshots;
     }
 
     @Data
     public static class Consumer {
         private String groupId;
-        private long pollTimeoutMs = 200;
-        private boolean enableAutoCommit = false;
+        private long pollTimeoutMs;
+        private boolean enableAutoCommit;
         private Map<String, Object> properties = new HashMap<>();
-
-        public static Consumer defaults(boolean enableAutoCommit, long pollTimeoutMs) {
-            Consumer consumer = new Consumer();
-            consumer.setEnableAutoCommit(enableAutoCommit);
-            consumer.setPollTimeoutMs(pollTimeoutMs);
-            return consumer;
-        }
     }
 }
