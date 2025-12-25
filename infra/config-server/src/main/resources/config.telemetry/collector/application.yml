@@ -1,0 +1,33 @@
+server:
+  port: 0
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    preferIpAddress: true
+
+# Kafka
+kafka:
+  bootstrap-servers: localhost:9092
+  topic:
+    sensors: telemetry.sensors.v1
+    hubs: telemetry.hubs.v1
+
+# gRPC server
+grpc:
+  server:
+    port: 59091
+
+# Logging
+logging:
+  level:
+    org.springframework.kafka: INFO
+    ru.yandex.practicum: TRACE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
