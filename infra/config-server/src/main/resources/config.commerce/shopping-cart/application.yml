@@ -25,8 +25,11 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka/
+    registryFetchIntervalSeconds: 5
+    initialInstanceInfoReplicationIntervalSeconds: 5
   instance:
     preferIpAddress: true
+    leaseRenewalIntervalInSeconds: 10
 
 logging:
   level:
