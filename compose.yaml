@@ -1,4 +1,48 @@
 services:
+  postgres:
+    image: postgres:16.1
+    container_name: postgres
+    hostname: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: telemetry_analyzer
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    # volumes:
+    #   - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+
+  db-init:
+    image: postgres:16.1
+    container_name: db-init
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        DB_URL="postgresql://postgres:changeme@postgres:5432/postgres"
+        create_db_if_missing() {
+          local db=$1
+          psql "$${DB_URL}" -v ON_ERROR_STOP=1 -tc "SELECT 1 FROM pg_database WHERE datname='$${db}'" | grep -q 1 || \
+            psql "$${DB_URL}" -v ON_ERROR_STOP=1 -c "CREATE DATABASE \"$${db}\""
+        }
+
+        create_db_if_missing analyzer
+        create_db_if_missing commerce_shopping_cart
+        create_db_if_missing commerce_shopping_store
+        create_db_if_missing commerce_warehouse
+        create_db_if_missing commerce_order
+        create_db_if_missing commerce_delivery
+        create_db_if_missing commerce_payment
+
   kafka:
     image: confluentinc/confluent-local:7.4.3
     hostname: kafka
