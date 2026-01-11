@@ -35,4 +35,7 @@ public interface ShoppingStoreApi {
     @PostMapping("/quantityState")
     ResponseEntity<Boolean> setProductQuantityState(@RequestParam UUID productId,
                                                     @RequestParam QuantityState quantityState);
+
+    @GetMapping("/internal/{productId}")
+    ResponseEntity<ProductDto> getProductInternal(@PathVariable UUID productId);
 }

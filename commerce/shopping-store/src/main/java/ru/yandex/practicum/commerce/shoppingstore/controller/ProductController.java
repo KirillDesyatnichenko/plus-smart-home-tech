@@ -19,7 +19,6 @@ import ru.yandex.practicum.commerce.dto.ProductDto;
 import ru.yandex.practicum.commerce.dto.QuantityState;
 import ru.yandex.practicum.commerce.shoppingstore.service.ProductService;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -68,5 +67,11 @@ public class ProductController implements ShoppingStoreApi {
     ) {
         boolean result = productService.setProductQuantityState(productId, quantityState);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/internal/{productId}")
+    public ResponseEntity<ProductDto> getProductInternal(@PathVariable UUID productId) {
+        ProductDto product = productService.getProductById(productId);
+        return ResponseEntity.ok(product);
     }
 }
