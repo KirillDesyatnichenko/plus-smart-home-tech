@@ -43,6 +43,27 @@ public class WarehouseController implements WarehouseApi {
         return ResponseEntity.ok(booked);
     }
 
+    @PostMapping("/assembly")
+    public ResponseEntity<BookedProductsDto> assemblyProductsForOrder(
+            @Valid @RequestBody ru.yandex.practicum.commerce.dto.AssemblyProductsForOrderRequest request
+    ) {
+        return ResponseEntity.ok(warehouseService.assemblyProductsForOrder(request));
+    }
+
+    @PostMapping("/shipped")
+    public ResponseEntity<Void> shippedToDelivery(
+            @Valid @RequestBody ru.yandex.practicum.commerce.dto.ShippedToDeliveryRequest request
+    ) {
+        warehouseService.shippedToDelivery(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/return")
+    public ResponseEntity<Void> acceptReturn(@RequestBody java.util.Map<java.util.UUID, Long> products) {
+        warehouseService.acceptReturn(products);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/address")
     public ResponseEntity<AddressDto> getWarehouseAddress() {
         return ResponseEntity.ok(warehouseService.getWarehouseAddress());
